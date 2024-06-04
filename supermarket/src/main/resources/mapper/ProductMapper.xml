@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baidu.supermarket.mapper.ProductMapper">
+    <resultMap id="productBaseMap" type="Product">
+        <id property="prodId" column="pid" javaType="int" jdbcType="INTEGER"/>
+        <result property="prodName" column="pname" javaType="string" jdbcType="VARCHAR"/>
+        <result property="prodPrice" column="price" javaType="double" jdbcType="DOUBLE"/>
+        <result property="pfile" column="pfile"/>
+        <result property="description" column="description"/>
+    </resultMap>
+
+    <delete id="batchDel" >
+        delete from t_product where pid in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <resultMap id="MonthSal" type="map">
+        <id property="month" column="month" jdbcType="INTEGER" javaType="int"/>
+        <result property="sal" column="price" javaType="double" jdbcType="DOUBLE"/>
+    </resultMap>
+
+    <select id="queryMonthSal" resultMap="MonthSal">
+        select month(o.createtime) month, sum(total_price) price from t_order o
+        where year(o.createtime)=#{year}
+        group by month(o.createtime)
+        order by month
+    </select>
+
+    <resultMap id="totalRatioMap" type="map">
+    </resultMap>
+<!--    查询总体销售品类占比 -->
+    <select id="queryTotalRatio" resultMap="totalRatioMap">
+        select p.pid, p.pname, sum(p.price) total from t_order o
+            inner join t_order_product op on o.oid = op.oid
+            inner join t_product p on op.pid = p.pid
+        group by p.pid
+    </select>
+</mapper>

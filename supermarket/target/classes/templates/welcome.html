@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link th:href="@{/css/welcome.css}" type="text/css" rel="stylesheet">
+</head>
+<body>
+<div id="up">
+    <ul>
+        <li><span>平台首页</span></li>
+    </ul>
+</div>
+<div id="down">
+    <div id="d1">
+        <span class="s1">
+            &#10084 &#10084 &#10084热烈欢迎:
+            <span style="color:pink; weight:bolder;" th:text="${session.user.name}"></span>
+        </span>
+        <span class="s2">公主/王子访问捷捷优选后台！！！</span>
+        <br><br><br>
+        <span class="s3" style="margin-left: 50px"><img src="/img/001.jpg" width="800" height="400" /></span>
+
+    </div>
+<!--    <div id="d2" style="width: 840px;height:450px;">-->
+<!--        哈哈哈哈哈哈哈-->
+<!--        <span><img src="/img/0001.jpg" width="840" height="450"/></span>-->
+<!--    </div>-->
+</div>
+</body>
+</html>

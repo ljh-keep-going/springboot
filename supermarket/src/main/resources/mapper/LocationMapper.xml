@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baidu.supermarket.mapper.LocationMapper">
+
+    <resultMap id="locationMap" type="Location">
+        <id property="aid" column="aid"/>
+        <result property="realName" column="realName"/>
+        <result property="phone" column="phone"/>
+        <result property="identity" column="identity"/>
+        <result property="address" column="address"/>
+        <result property="uid" column="uid"/>
+    </resultMap>
+
+    <!--查询所有的用户地址信息-->
+    <select id="getAlllocation" resultMap="locationMap">
+        SELECT *
+        FROM location l
+        WHERE realName like concat("%",#{realName},"%")
+            limit #{start},#{pageSize}
+    </select>
+
+    <!--根据uid查询对应的用户地址信息-->
+    <select id="getAlllocationByUid" resultMap="locationMap">
+        SELECT *
+        FROM location l
+        WHERE l.uid=#{uid}
+            limit #{start},#{pageSize}
+    </select>
+
+    <!--查询总记录数-->
+    <select id="count" parameterType="String" resultType="int">
+        select count(l.aid)
+        from location l
+        where realName like concat("%",#{realName},"%")
+    </select>
+
+    <!--查询l.uid总记录数-->
+    <select id="count2" parameterType="int" resultType="int">
+        SELECT count(l.uid)
+        FROM location l
+        WHERE l.uid=#{uid}
+    </select>
+
+    <!--根据主键aid批量删除用户地址信息-->
+    <delete id="batchDelLocation">
+        delete from location where aid IN
+        <foreach collection="array" item="ids" open="(" close=")" separator=",">
+            #{ids}
+        </foreach>
+    </delete>
+</mapper>

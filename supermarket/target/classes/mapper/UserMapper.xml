@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baidu.supermarket.mapper.UserMapper">
+
+    <sql id="usersql">
+        SELECT u.*,r.*
+        FROM USER u,role r
+        WHERE u.role_id=r.rid
+    </sql>
+    <resultMap id="baseMap" type="User">
+        <id property="uid" column="uid"/>
+        <result property="name" column="name"/>
+        <result property="password" column="password"/>
+        <result property="telephone" column="telephone"/>
+        <result property="createTime" column="createTime"/>
+        <result property="roleId" column="role_id"/>
+    </resultMap>
+
+    <resultMap id="userMap" type="User" extends="baseMap">
+        <association property="role" javaType="Role">
+            <id property="rid" column="rid"/>
+            <result property="roleName" column="roleName"/>
+        </association>
+    </resultMap>
+    <!--查询所有用户信息以及用户角色-->
+    <select id="getAllUser" resultMap="userMap">
+        <include refid="usersql"/>
+        and name like concat("%",#{name},"%")
+        limit #{start},#{pageSize}
+    </select>
+
+    <!--查询总记录数-->
+    <select id="count" parameterType="String" resultType="int">
+        select count(u.uid)
+        from user u,role r
+        where u.role_id=r.rid and  name like concat("%",#{name},"%")
+    </select>
+
+    <!--根据主键批量删除用户信息-->
+    <delete id="batchDelUser">
+        delete from user where uid IN
+        <foreach collection="array" item="ids" open="(" close=")" separator=",">
+            #{ids}
+        </foreach>
+    </delete>
+</mapper>

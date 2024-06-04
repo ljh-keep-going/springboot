@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baidu.supermarket.mapper.CartMapper">
+    
+    <resultMap id="cartMap" type="Cart">
+        <id property="cid" column="cid"/>
+        <result property="pquantity" column="pquantity"/>
+        <association property="user" javaType="User">
+            <id property="uid" column="uid"/>
+            <result property="name" column="name"/>
+            <result property="telephone" column="telephone"/>
+        </association>
+        <association property="product" javaType="Product">
+            <id property="prodId" column="pid"/>
+            <result property="prodName" column="pname"/>
+            <result property="prodPrice" column="price"/>
+        </association>
+    </resultMap>
+    
+    <!--查询所有用户的购物车信息以及管理的用户信息，商品信息-->
+    <select id="getAllCart" resultMap="cartMap">
+        SELECT u.uid,u.name,u.telephone,c.cid,c.pquantity,p.pid,p.pname,p.price
+        FROM USER u,cart c,t_product p
+        WHERE u.uid=c.uid AND c.pid=p.pid and p.pname like concat("%",#{pname},"%")
+        limit #{start},#{pageSize}
+    </select>
+
+    <!--根据uid查询对应的用户购物车信息以及用户信息，商品信息-->
+    <select id="getAllCartById" resultMap="cartMap">
+        SELECT u.uid,u.name,u.telephone,c.cid,c.pquantity,p.pid,p.pname,p.price
+        FROM USER u,cart c,t_product p
+        WHERE u.uid=c.uid AND c.pid=p.pid and c.uid=#{uid}
+            limit #{start},#{pageSize}
+    </select>
+
+    <!--查询c.cid总记录数-->
+    <select id="count" parameterType="String" resultType="int">
+        SELECT count(c.cid)
+        FROM USER u,cart c,t_product p
+        WHERE u.uid=c.uid AND c.pid=p.pid and p.pname like concat("%",#{pname},"%")
+    </select>
+
+    <!--查询c.uid总记录数-->
+    <select id="count2" parameterType="int" resultType="int">
+        SELECT count(c.uid)
+        FROM cart c
+        WHERE c.uid = #{uid}
+    </select>
+
+    <!--批量删除购物车-->
+    <delete id="batchDelCart">
+        delete from cart where cid IN
+        <foreach collection="array" item="cids" open="(" close=")" separator=",">
+            #{cids}
+        </foreach>
+    </delete>
+
+    <resultMap id="moneyMap" type="Cart">
+        <id property="cid" column="cid"/>
+        <result property="pid" column="pid"/>
+        <result property="uid" column="uid"/>
+        <result property="pquantity" column="pquantity"/>
+
+        <association property="product" javaType="Product">
+            <id property="prodId" column="ppid"/>
+            <result property="prodName" column="pname"/>
+            <result property="prodPrice" column="price"/>
+            <result property="pfile" column="pfile"/>
+        </association>
+    </resultMap>
+
+    <!--查询被勾选的购物车以及对应的商品信息-->
+    <select id="getCartByCids" resultMap="moneyMap">
+        SELECT c.*,p.pid AS ppid,p.pname,p.price,p.pfile
+        FROM cart c,t_product p
+        WHERE c.pid=p.pid AND c.cid IN
+        <foreach collection="array" item="ids" open="(" close=")" separator=",">
+            #{ids}
+        </foreach>
+    </select>
+</mapper>

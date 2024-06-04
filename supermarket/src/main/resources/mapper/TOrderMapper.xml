@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baidu.supermarket.mapper.TOrderMapper">
+    <resultMap id="orderMap" type="TOrder">
+        <id property="oid" column="oid"/>
+        <result property="totalPrice" column="total_price"/>
+        <result property="createtime" column="createtime"/>
+        <result property="status" column="status"/>
+        <result property="goodsStatus" column="goodsStatus"/>
+        <association property="user" javaType="User">
+            <result property="name" column="name"/>
+            <result property="uid" column="uid"/>
+        </association>
+        <association property="product" javaType="Product">
+            <result property="prodName" column="pname"/>
+        </association>
+    </resultMap>
+
+    <select id="getAllOrders" resultMap="orderMap">
+        SELECT u.name,o.oid,o.total_price,o.createtime,o.status,o.goodsStatus
+        FROM USER u,t_order o
+        WHERE u.uid=o.uid
+        LIMIT #{start},#{pageSize}
+    </select>
+
+    <select id="getAllOrdersByUid" resultMap="orderMap">
+        SELECT o.oid,u.uid,u.name,p.pname,o.total_price,o.createtime,o.status,o.goodsStatus
+        FROM USER u,t_order o,t_product p,t_order_detail od
+        WHERE u.uid=o.uid and o.uid=#{uid} and od.pid=p.pid and od.oid=o.oid
+            LIMIT #{start},#{pageSize}
+    </select>
+
+    <!--查询总记录数-->
+    <select id="count" resultType="int">
+        SELECT count(*)
+        FROM USER u,t_order o
+        WHERE u.uid=o.uid
+    </select>
+
+    <!--查询uid总记录数-->
+    <select id="count2" resultType="int">
+        SELECT count(o.uid)
+        FROM t_order o
+        WHERE o.uid=#{uid}
+    </select>
+
+    <!--执行批量删除-->
+    <delete id="batchDelOrder">
+        delete from t_order where oid IN
+        <foreach collection="array" item="oids" open="(" close=")" separator=",">
+            #{oids}
+        </foreach>
+    </delete>
+</mapper>

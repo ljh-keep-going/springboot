@@ -1,0 +1,5 @@
+com\baidu\supermarket\FloristApplicationTests.class
+com\baidu\supermarket\TestRoleService.class
+com\baidu\supermarket\TestCartService.class
+com\baidu\supermarket\TestUserService.class
+com\baidu\supermarket\TestOrderMapper.class
